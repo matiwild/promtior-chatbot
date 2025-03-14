@@ -1,0 +1,31 @@
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+env/
+
+# Archivos de distribución
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Registros de pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Configuraciones de IDE (ej. VS Code)
+.vscode/
