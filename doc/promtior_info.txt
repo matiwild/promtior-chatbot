@@ -1,0 +1,3 @@
+Promtior specializes in implementing cutting-edge generative solutions and provides technology and organizational consulting. Its services include developing AI-based solutions, advising on digital transformation, and implementing innovative architectures such as RAG (Retrieval Augmented Generation) to generate accurate and personalized responses.
+
+The company was founded in May 2023, in response to the rapid advances in artificial intelligence and the growing need for businesses to adapt to new technological challenges.
