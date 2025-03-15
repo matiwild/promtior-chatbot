@@ -29,3 +29,6 @@ pip-delete-this-directory.txt
 
 # Configuraciones de IDE (ej. VS Code)
 .vscode/
+
+#Models
+models/
