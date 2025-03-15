@@ -3,6 +3,7 @@ from config import MODEL_PATH, DOCUMENT_PATH, N_CTX, TEMPERATURE, N_THREADS, MAX
 from data_loader import load_document
 from model_setup import initialize_vector_store, initialize_model, build_qa_chain
 
+
 def run_query(qa_chain, query: str, max_tokens: int) -> str:
     """Execute a query and return the 'result' from the QA chain."""
     result = qa_chain.invoke(input=query, max_tokens=max_tokens)
