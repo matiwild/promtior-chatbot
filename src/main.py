@@ -10,7 +10,6 @@ def run_query(qa_chain, query: str, max_tokens: int) -> str:
     return result.get("result", result)
 
 def main():
-    global MODEL_PATH
     logging.basicConfig(level=logging.WARNING)
     
     document_text = load_document(DOCUMENT_PATH)
