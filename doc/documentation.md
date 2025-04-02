@@ -2,38 +2,36 @@
 
 ## 1. Overview
 
-This project implements a QA chatbot that uses the Llama 2 7B model in GGUF format along with LangChain to answer questions about Promtior's services. The solution integrates several components:
+This project implements a QA chatbot that uses Google Gemini to answer questions about Promtior's services. The solution integrates several components:
+
 
 - **Data Loading:** Loads Promtior's information from a text file (`promtior_info.txt`).
-- **Embeddings & Vector Store:** Generates embeddings using `HuggingFaceInstructEmbeddings` (model "hkunlp/instructor-large") and builds a vector store with FAISS.
-- **Language Model:** Initializes the Llama 2 7B model using `LlamaCpp` from llama-cpp-python.
+- **Language Model:** Uses Google Gemini to generate responses based on the provided document. Google Gemini is an advanced AI model developed by Google, designed to understand context and provide accurate, human-like responses to natural language queries.
+
 - **QA Chain:** Combines the model and vector store using a RetrievalQA chain to generate answers.
 
 ## 2. Project Structure
 
 promtior-chatbot/
 ├── src/
-│ ├── config.py # Configuration parameters (paths, model parameters, etc.)
-│ ├── data_loader.py # Functions to load and process the document
-│ ├── model_setup.py # Functions to initialize the model, embeddings, vector store, and QA chain
-│ ├── models/7B/ # Contains the Llama 2 7B Chat GGUF model (included in Docker image)
-│ └── main.py # Main application code
+│   ├── gemini_client.py     # Functions to connect to Google Gemini API and handle queries
+│   ├── api.py               # FastAPI application and route setup
+│   └── main.py              # Main application code
 ├── doc/
-│ ├── promtior_info.txt # Promtior information file
-│ ├── UML-Component-Diagram.png # UML component diagram
-│ └── DOCUMENTATION.md # This technical documentation
-├── tests/
-│ └── test_basic.py # Basic unit tests (e.g., verifying document loading)
-│ ├── test_model_setup.py # Unit tests for model initialization and query execution
-├── requirements.txt # Project dependencies
-├── Dockerfile # Docker configuration (includes model in container)
-├── Procfile # Defines the command to run in Railway deployment
-└── runtime.txt # Specifies Python runtime version
+│   ├── promtior_info.txt    # Promtior information file
+│   ├── UML-Component-Diagram.png  # UML component diagram
+│   └── DOCUMENTATION.md     # This technical documentation
+├── requirements.txt         # Project dependencies
+├── Dockerfile               # Docker configuration (includes model in container)
+├── Procfile                 # Defines the command to run in Railway deployment
+└── runtime.txt              # Specifies Python runtime version
+
 
 ## 3. Installation and Execution Instructions
 
 1. **Clone the Repository:**
    git clone https://github.com/your_username/promtior-chatbot.git
+
    cd promtior-chatbot
 2. **Create and Activate a Virtual Environment:**
 
@@ -50,9 +48,7 @@ source env/bin/activate
 
 4. **Model Handling (Handled in Dockerfile)**
 
-The Llama 2 7B Chat GGUF model is already included in the Docker image.
-The Dockerfile ensures that the model is available inside the container.
-No manual download is required.
+The Google Gemini model is accessed via the API using an API key stored in the .env file. The model is used to generate responses based on the provided context.
 
 5. **Run the Application:**
 
@@ -66,32 +62,86 @@ docker run --rm -it promtior-chatbot
 **Deploy in Railway:**
 (See Railway-specific documentation below.)
 
-## 4. Running Tests
 
-To run the tests, execute:
+## 4. Deployment in Railway
 
-python -m unittest discover -s src/tests
-
-This includes:
-
-test_basic.py: Verifies document loading.
-test_model_setup.py: Ensures model initialization and QA chain execution work as expected.
-
-## 5. Deployment in Railway
-
-This project is designed to run on Railway using a Docker container.
-The Dockerfile ensures that all dependencies and the model are included.
+This project is designed to run on Railway using a Docker container. The Dockerfile ensures that all dependencies and the model are included.
 
 The Procfile defines the entry point:
 web: python src/main.py
 
 Deployment Steps:
-Push the latest changes to GitHub (git push origin feature/deploy).
-Railway will automatically detect changes and redeploy the container.
-Check logs in Railway to ensure the service starts correctly.
+1. Push the latest changes to GitHub (git push origin feature/deploy).
 
-Current Issue on Railway:
-At the moment, the deployment on Railway is not working as expected. The service crashes after deployment, likely due to model handling or resource limitations. This issue is under investigation, and updates will be provided in future iterations of the documentation.
+2. Railway will automatically detect changes and redeploy the container.
+
+3. Check logs in Railway to ensure the service starts correctly.
+
+Railway Deploy URL:
+https://promtior-chatbot-production.up.railway.app/docs
+
+## 5. API Endpoints
+
+This section describes the endpoints exposed by the chatbot and how to interact with them.
+
+### 5.1. POST /ask
+
+This endpoint receives a question in JSON format and returns an answer generated by the Google Gemini model, based on the content of `promtior_info.txt`.
+
+#### Request
+
+Send a POST request with a JSON body. The structure of the JSON should be:
+
+```json
+{
+  "question": "Your question about Promtior."
+}
+Parameters:
+question: The question you want to ask the chatbot. This parameter is required.
+```
+Example Request
+Using curl:
+```
+curl -X POST 'https://promtior-chatbot-production.up.railway.app/ask' \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "question": "What services does Promtior offer?"
+      }'
+```
+Response
+The service will respond with a generated answer based on the content in promtior_info.txt.
+
+Response JSON Structure:
+```json
+{
+  "answer": "Answer generated by the model"
+}
+```
+Example Response:
+```json
+{
+  "answer": "Promtior offers services including AI solutions, digital transformation consulting, and implementing innovative architectures such as RAG."
+}
+```
+
+### 5.2. Error Handling
+If no question is provided or if the system fails to process the request correctly, the endpoint will respond with an error.
+
+Example Error Response (422 Unprocessable Entity):
+```json
+{
+  "error": "The 'question' field is required."
+}
+```
+Example Error Response (500 Internal Server Error):
+```json
+{
+  "error": "Failed to connect to Google Gemini API. Please try again later."
+}
+```
+### Summary
+The /ask API is the main endpoint for interacting with the chatbot. The Google Gemini model generates answers to questions about Promtior based on the provided content. Error handling is implemented to ensure clear responses are provided when the request is invalid or the system encounters issues.
+
 
 ## 6. Architecture Diagram
 
@@ -107,4 +157,4 @@ Robustness: Enhance error handling and add more unit tests to cover additional p
 
 ## 8. Conclusion
 
-This project demonstrates the integration of NLP techniques using LangChain, llama-cpp-python, and FAISS to build a QA chatbot that answers specific questions about Promtior. The modular structure, clear configuration, and inclusion of unit tests highlight adherence to good software engineering practices.
+This project demonstrates the integration of NLP techniques using Google Gemini, to build a QA chatbot that answers specific questions about Promtior. The modular structure, clear configuration, and inclusion of unit tests highlight adherence to good software engineering practices.
