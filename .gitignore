@@ -5,6 +5,7 @@ __pycache__/
 
 # Entornos virtuales
 env/
+.env
 
 # Archivos de distribución
 .Python
