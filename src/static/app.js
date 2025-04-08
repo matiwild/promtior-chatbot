@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch("https://promtior-chatbot-production.up.railway.app/ask", {
+            const response = await fetch("/ask", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
